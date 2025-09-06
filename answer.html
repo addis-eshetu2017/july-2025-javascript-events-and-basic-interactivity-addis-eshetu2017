@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Web Page</title>
+    <style>
+        :root {
+            --primary-color: #0546a7;
+            --secondary-color: #2e79a1;
+            --text-color: #302a2a;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #6b8cbe;
+            --secondary-color: #4a6fa5;
+            --text-color: #f0f0f0;
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        section {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        /* Counter */
+        .counter {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .counter-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 15px 0;
+        }
+
+        .counter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        /* FAQ Section */
+        .faq-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .faq-question {
+            background: none;
+            border: none;
+            text-align: left;
+            width: 100%;
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-color);
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .faq-question:hover {
+            background-color: rgba(0, 0, 0, 0.08);
+        }
+
+        .faq-answer {
+            padding: 15px;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 0 0 5px 5px;
+        }
+
+        .faq-answer.show {
+            display: block;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        }
+
+        .error {
+            color: var(--error-color);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            background-color: var(--success-color);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
+
+    <header>
+        <h1>Interactive Web Page</h1>
+        <p>Explore JavaScript interactivity with these features</p>
+    </header>
+
+    <div class="container">
+        <!-- Counter Section -->
+        <section>
+            <h2>Counter Game</h2>
+            <div class="counter">
+                <p>Click the buttons to change the value:</p>
+                <div class="counter-value" id="counterValue">0</div>
+                <div class="counter-buttons">
+                    <button id="decrementBtn">-</button>
+                    <button id="resetBtn">Reset</button>
+                    <button id="incrementBtn">+</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section>
+            <h2>FAQ Section</h2>
+            <div class="faq">
+                <div class="faq-item">
+                    <button class="faq-question">What is JavaScript used for?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>JavaScript is a programming language primarily used for adding interactivity to web pages. It allows you to create dynamic content, control multimedia, animate images, and much more.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">What are JavaScript events?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>JavaScript events are actions that occur on web pages, such as clicks, mouse movements, keyboard input, and form submissions. You can use event listeners to execute code in response to these events.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">What is DOM manipulation?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>DOM manipulation refers to using JavaScript to interact with and modify the Document Object Model (DOM) of a web page. This allows you to dynamically change content, styles, and structure without reloading the page.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Validation Section -->
+        <section>
+            <h2>Form Validation</h2>
+            <form id="validationForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Enter your name">
+                    <div class="error" id="nameError">Please enter a valid name (letters only)</div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email">
+                    <div class="error" id="emailError">Please enter a valid email address</div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password">
+                    <div class="error" id="passwordError">Password must be at least 8 characters with uppercase, lowercase, and number</div>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" rows="4" placeholder="Enter your message"></textarea>
+                    <div class="error" id="messageError">Message must be at least 10 characters long</div>
+                </div>
+                <button type="submit">Submit</button>
+                <div class="success-message" id="successMessage">
+                    Form submitted successfully!
+                </div>
+            </form>
+        </section>
+
+        <!-- Interactive Demo Section -->
+        <section>
+            <h2>Interactive Demo</h2>
+            <p>Move your mouse over the box below:</p>
+            <div style="height: 150px; background: var(--primary-color); border-radius: 10px; display: flex; justify-content: center; align-items: center; margin: 20px 0; transition: all 0.3s ease;" id="interactiveBox">
+                <span style="color: white; font-weight: bold;">Interact with me!</span>
+            </div>
+            <p>Type something below to see it reflected:</p>
+            <input type="text" id="liveTextInput" placeholder="Start typing...">
+            <p style="margin-top: 15px;">Output: <span id="liveTextOutput"></span></p>
+        </section>
+    </div>
+
+    <footer>
+        <p>Interactive Web Page Assignment &copy; 2023</p>
+    </footer>
+
+    <script>
+        // ===== PART 1: JavaScript Event Handling =====
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.toggleAttribute('data-theme');
+            if (document.body.hasAttribute('data-theme')) {
+                themeToggle.textContent = '☀️ Light Mode';
+            } else {
+                themeToggle.textContent = '🌙 Dark Mode';
+            }
+        });
+
+        // Interactive box mouse events
+        const interactiveBox = document.getElementById('interactiveBox');
+        interactiveBox.addEventListener('mouseover', () => {
+            interactiveBox.style.transform = 'scale(1.05)';
+            interactiveBox.style.backgroundColor = '#166088';
+            interactiveBox.querySelector('span').textContent = 'Mouse is over!';
+        });
+
+        interactiveBox.addEventListener('mouseout', () => {
+            interactiveBox.style.transform = 'scale(1)';
+            interactiveBox.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+            interactiveBox.querySelector('span').textContent = 'Interact with me!';
+        });
+
+        // Live text input
+        const liveTextInput = document.getElementById('liveTextInput');
+        const liveTextOutput = document.getElementById('liveTextOutput');
+        
+        liveTextInput.addEventListener('input', () => {
+            liveTextOutput.textContent = liveTextInput.value;
+        });
+
+        // ===== PART 2: Building Interactive Elements =====
+
+        // Counter functionality
+        let count = 0;
+        const counterValue = document.getElementById('counterValue');
+        const incrementBtn = document.getElementById('incrementBtn');
+        const decrementBtn = document.getElementById('decrementBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        function updateCounter() {
+            counterValue.textContent = count;
+            // Change color based on value
+            if (count > 0) {
+                counterValue.style.color = '#2ecc71'; // Green for positive
+            } else if (count < 0) {
+                counterValue.style.color = '#e74c3c'; // Red for negative
+            } else {
+                counterValue.style.color = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+            }
+        }
+
+        incrementBtn.addEventListener('click', () => {
+            count++;
+            updateCounter();
+        });
+
+        decrementBtn.addEventListener('click', () => {
+            count--;
+            updateCounter();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            count = 0;
+            updateCounter();
+        });
+
+        // FAQ accordion functionality
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const plusSign = question.querySelector('span');
+                
+                // Toggle answer visibility
+                answer.classList.toggle('show');
+                
+                // Change the plus sign to minus and vice versa
+                if (answer.classList.contains('show')) {
+                    plusSign.textContent = '−';
+                } else {
+                    plusSign.textContent = '+';
+                }
+                
+                // Close other open FAQs
+                faqQuestions.forEach(otherQuestion => {
+                    if (otherQuestion !== question) {
+                        const otherAnswer = otherQuestion.nextElementSibling;
+                        const otherPlus = otherQuestion.querySelector('span');
+                        otherAnswer.classList.remove('show');
+                        otherPlus.textContent = '+';
+                    }
+                });
+            });
+        });
+
+        // ===== PART 3: Form Validation =====
+        const form = document.getElementById('validationForm');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const messageInput = document.getElementById('message');
+        const nameError = document.getElementById('nameError');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const messageError = document.getElementById('messageError');
+        const successMessage = document.getElementById('successMessage');
+
+        // Real-time validation
+        nameInput.addEventListener('input', () => validateName());
+        emailInput.addEventListener('input', () => validateEmail());
+        passwordInput.addEventListener('input', () => validatePassword());
+        messageInput.addEventListener('input', () => validateMessage());
+
+        function validateName() {
+            const nameRegex = /^[A-Za-z\s]+$/;
+            if (!nameInput.value.trim()) {
+                showError(nameInput, nameError, "Name is required");
+                return false;
+            } else if (!nameRegex.test(nameInput.value)) {
+                showError(nameInput, nameError, "Name can only contain letters");
+                return false;
+            } else {
+                clearError(nameInput, nameError);
+                return true;
+            }
+        }
+
+        function validateEmail() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailInput.value.trim()) {
+                showError(emailInput, emailError, "Email is required");
+                return false;
+            } else if (!emailRegex.test(emailInput.value)) {
+                showError(emailInput, emailError, "Please enter a valid email address");
+                return false;
+            } else {
+                clearError(emailInput, emailError);
+                return true;
+            }
+        }
+
+        function validatePassword() {
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            if (!passwordInput.value) {
+                showError(passwordInput, passwordError, "Password is required");
+                return false;
+            } else if (!passwordRegex.test(passwordInput.value)) {
+                showError(passwordInput, passwordError, "Password must be at least 8 characters with uppercase, lowercase, and number");
+                return false;
+            } else {
+                clearError(passwordInput, passwordError);
+                return true;
+            }
+        }
+
+        function validateMessage() {
+            if (!messageInput.value.trim()) {
+                showError(messageInput, messageError, "Message is required");
+                return false;
+            } else if (messageInput.value.trim().length < 10) {
+                showError(messageInput, messageError, "Message must be at least 10 characters long");
+                return false;
+            } else {
+                clearError(messageInput, messageError);
+                return true;
+            }
+        }
+
+        function showError(input, errorElement, message) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            input.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--error-color');
+        }
+
+        function clearError(input, errorElement) {
+            errorElement.style.display = 'none';
+            input.style.borderColor = '#ddd';
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const isNameValid = validateName();
+            const isEmailValid = validateEmail();
+            const isPasswordValid = validatePassword();
+            const isMessageValid = validateMessage();
+            
+            if (isNameValid && isEmailValid && isPasswordValid && isMessageValid) {
+                // Form is valid - show success message
+                successMessage.style.display = 'block';
+                
+                // Reset form after 3 seconds
+                setTimeout(() => {
+                    form.reset();
+                    successMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
