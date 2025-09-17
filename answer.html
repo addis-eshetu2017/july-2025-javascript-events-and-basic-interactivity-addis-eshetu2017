@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Web Page</title>
+    <style>
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-mode {
+            background-color: #1a1a2e;
+            color: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 30px;
+        }
+        
+        .dark-mode header {
+            border-bottom: 2px solid #444;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 15px;
+        }
+        
+        section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark-mode section {
+            background-color: #16213e;
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05);
+        }
+        
+        button {
+            padding: 10px 15px;
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3a5985;
+        }
+        
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+        }
+        
+        .toggle-text {
+            margin-right: 10px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #4a6fa5;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Counter Game */
+        .counter-game {
+            text-align: center;
+        }
+        
+        .counter-value {
+            font-size: 2.5rem;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        .game-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        /* FAQ Section */
+        .faq-item {
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .dark-mode .faq-item {
+            border: 1px solid #444;
+        }
+        
+        .faq-question {
+            padding: 15px;
+            background-color: #f1f1f1;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+        
+        .dark-mode .faq-question {
+            background-color: #0f3460;
+        }
+        
+        .faq-answer {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .faq-answer.active {
+            padding: 15px;
+            max-height: 300px;
+        }
+        
+        /* Form Validation */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .dark-mode input {
+            background-color: #1a1a2e;
+            color: #f5f7fa;
+            border: 1px solid #444;
+        }
+        
+        .error {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #2ecc71;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        /* Tabbed Interface */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        
+        .dark-mode .tabs {
+            border-bottom: 1px solid #444;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            border-color: #ddd;
+            border-bottom-color: white;
+            background-color: white;
+        }
+        
+        .dark-mode .tab.active {
+            border-color: #444;
+            border-bottom-color: #16213e;
+            background-color: #16213e;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Interactive Web Page</h1>
+            <div class="theme-toggle">
+                <span class="toggle-text">Dark Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="dark-mode-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </header>
+
+        <section id="theme-section">
+            <h2>Dark/Light Mode Toggle</h2>
+            <p>Toggle the switch in the header to change between dark and light modes.</p>
+        </section>
+
+        <section class="counter-game">
+            <h2>Counter Game</h2>
+            <p>Click the buttons to change the counter value. Try to get exactly 10!</p>
+            <div class="counter-value" id="counter">0</div>
+            <div class="game-buttons">
+                <button id="decrement">-1</button>
+                <button id="increment">+1</button>
+                <button id="reset">Reset</button>
+            </div>
+            <p id="game-message"></p>
+        </section>
+
+        <section id="faq-section">
+            <h2>FAQ Section</h2>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What is JavaScript?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>JavaScript is a programming language that enables interactive web pages. It is an essential part of web applications and is supported by all modern web browsers.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What are JavaScript events?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>JavaScript events are actions that occur on a web page, such as clicks, mouse movements, keyboard input, and page loading. You can use JavaScript to respond to these events and create interactive experiences.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What is DOM manipulation?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>DOM manipulation refers to using JavaScript to modify the Document Object Model (DOM) of a web page. This allows you to dynamically change the content, structure, and style of a webpage without reloading it.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-section">
+            <h2>Tabbed Interface</h2>
+            <div class="tabs">
+                <div class="tab active" data-tab="tab1">Tab 1</div>
+                <div class="tab" data-tab="tab2">Tab 2</div>
+                <div class="tab" data-tab="tab3">Tab 3</div>
+            </div>
+            <div class="tab-content active" id="tab1">
+                <h3>Content for Tab 1</h3>
+                <p>This is the content for the first tab. Tabs are useful for organizing content in a limited space.</p>
+            </div>
+            <div class="tab-content" id="tab2">
+                <h3>Content for Tab 2</h3>
+                <p>This is the content for the second tab. Each tab can contain different types of information.</p>
+            </div>
+            <div class="tab-content" id="tab3">
+                <h3>Content for Tab 3</h3>
+                <p>This is the content for the third tab. Users can click between tabs to view different content sections.</p>
+            </div>
+        </section>
+
+        <section id="form-section">
+            <h2>Form Validation</h2>
+            <form id="validation-form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Enter your name">
+                    <div class="error" id="name-error">Please enter a valid name (letters and spaces only)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email">
+                    <div class="error" id="email-error">Please enter a valid email address</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password">
+                    <div class="error" id="password-error">Password must be at least 8 characters with at least one number and one letter</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="Enter your phone number">
+                    <div class="error" id="phone-error">Please enter a valid 10-digit phone number</div>
+                </div>
+                
+                <button type="submit">Submit</button>
+            </form>
+            <div class="success-message" id="success-message">
+                Form submitted successfully!
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Part 1: JavaScript Event Handling and Interactive Elements
+        
+        // Dark Mode Toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const body = document.body;
+            
+            // Check for saved theme preference
+            if (localStorage.getItem('dark-mode') === 'enabled') {
+                body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+            
+            // Toggle dark mode
+            darkModeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    body.classList.add('dark-mode');
+                    localStorage.setItem('dark-mode', 'enabled');
+                } else {
+                    body.classList.remove('dark-mode');
+                    localStorage.setItem('dark-mode', null);
+                }
+            });
+            
+            // Counter Game
+            const counterElement = document.getElementById('counter');
+            const incrementBtn = document.getElementById('increment');
+            const decrementBtn = document.getElementById('decrement');
+            const resetBtn = document.getElementById('reset');
+            const gameMessage = document.getElementById('game-message');
+            
+            let count = 0;
+            
+            function updateCounter() {
+                counterElement.textContent = count;
+                
+                if (count === 10) {
+                    gameMessage.textContent = 'Congratulations! You reached 10!';
+                    gameMessage.style.color = '#2ecc71';
+                } else {
+                    gameMessage.textContent = '';
+                }
+            }
+            
+            incrementBtn.addEventListener('click', function() {
+                count++;
+                updateCounter();
+            });
+            
+            decrementBtn.addEventListener('click', function() {
+                count--;
+                updateCounter();
+            });
+            
+            resetBtn.addEventListener('click', function() {
+                count = 0;
+                updateCounter();
+                gameMessage.textContent = 'Counter reset to 0';
+                gameMessage.style.color = '#333';
+                
+                setTimeout(function() {
+                    gameMessage.textContent = '';
+                }, 2000);
+            });
+            
+            // FAQ Section - Collapsible Items
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(function(question) {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    const icon = this.querySelector('span:last-child');
+                    
+                    // Toggle active class
+                    answer.classList.toggle('active');
+                    
+                    // Change icon
+                    if (answer.classList.contains('active')) {
+                        icon.textContent = '-';
+                    } else {
+                        icon.textContent = '+';
+                    }
+                });
+            });
+            
+            // Tabbed Interface
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(function(t) {
+                        t.classList.remove('active');
+                    });
+                    
+                    tabContents.forEach(function(content) {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Add active class to current tab and content
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Form Validation
+            const form = document.getElementById('validation-form');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const phoneInput = document.getElementById('phone');
+            const nameError = document.getElementById('name-error');
+            const emailError = document.getElementById('email-error');
+            const passwordError = document.getElementById('password-error');
+            const phoneError = document.getElementById('phone-error');
+            const successMessage = document.getElementById('success-message');
+            
+            // Real-time validation
+            nameInput.addEventListener('input', function() {
+                validateName();
+            });
+            
+            emailInput.addEventListener('input', function() {
+                validateEmail();
+            });
+            
+            passwordInput.addEventListener('input', function() {
+                validatePassword();
+            });
+            
+            phoneInput.addEventListener('input', function() {
+                validatePhone();
+            });
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const isNameValid = validateName();
+                const isEmailValid = validateEmail();
+                const isPasswordValid = validatePassword();
+                const isPhoneValid = validatePhone();
+                
+                if (isNameValid && isEmailValid && isPasswordValid && isPhoneValid) {
+                    successMessage.style.display = 'block';
+                    
+                    // Reset form after 2 seconds
+                    setTimeout(function() {
+                        form.reset();
+                        successMessage.style.display = 'none';
+                    }, 2000);
+                }
+            });
+            
+            // Validation functions
+            function validateName() {
+                const nameRegex = /^[a-zA-Z\s]+$/;
+                
+                if (!nameInput.value.trim()) {
+                    showError(nameError, 'Name is required');
+                    return false;
+                } else if (!nameRegex.test(nameInput.value)) {
+                    showError(nameError, 'Please enter a valid name (letters and spaces only)');
+                    return false;
+                } else {
+                    hideError(nameError);
+                    return true;
+                }
+            }
+            
+            function validateEmail() {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                if (!emailInput.value.trim()) {
+                    showError(emailError, 'Email is required');
+                    return false;
+                } else if (!emailRegex.test(emailInput.value)) {
+                    showError(emailError, 'Please enter a valid email address');
+                    return false;
+                } else {
+                    hideError(emailError);
+                    return true;
+                }
+            }
+            
+            function validatePassword() {
+                const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+                
+                if (!passwordInput.value) {
+                    showError(passwordError, 'Password is required');
+                    return false;
+                } else if (!passwordRegex.test(passwordInput.value)) {
+                    showError(passwordError, 'Password must be at least 8 characters with at least one number and one letter');
+                    return false;
+                } else {
+                    hideError(passwordError);
+                    return true;
+                }
+            }
+            
+            function validatePhone() {
+                const phoneRegex = /^\d{10}$/;
+                
+                if (!phoneInput.value.trim()) {
+                    showError(phoneError, 'Phone number is required');
+                    return false;
+                } else if (!phoneRegex.test(phoneInput.value.replace(/\D/g, ''))) {
+                    showError(phoneError, 'Please enter a valid 10-digit phone number');
+                    return false;
+                } else {
+                    hideError(phoneError);
+                    return true;
+                }
+            }
+            
+            function showError(errorElement, message) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+            
+            function hideError(errorElement) {
+                errorElement.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
